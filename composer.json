@@ -1,0 +1,16 @@
+{
+	"name": "cofreeweb/cofree",
+	"type": "cakephp-plugin",
+	"description": "Utilities plugin for CakePHP",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Cofreeweb",
+			"homepage": "http://cofreeweb.com"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0",
+		"composer/installers": "*"
+	}
+}
