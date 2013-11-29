@@ -187,6 +187,10 @@ class GitShell extends AppShell
 	  $this->ex( 'git commit -a -m "first commit"');
 	  $this->ex( 'git remote add origin '. $url);
 	  $this->ex( 'git push -u origin master');
+	  
+	  $this->ex( 'cp '. $this->appDir . 'Config/core.php.default ' . $this->appDir . 'Config/core.php');
+	  $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
+	  $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
 	}
 
 /**
