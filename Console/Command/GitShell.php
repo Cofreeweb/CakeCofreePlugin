@@ -185,7 +185,7 @@ class GitShell extends AppShell
 	  $this->ex( 'touch README.md');
 	  $this->ex( 'git init');
 	  $this->ex( 'git add README.md');
-	  $this->ex( 'git commit -m "first commit"');
+	  $this->ex( 'git commit -a -m "first commit"');
 	  $this->ex( 'git remote add origin '. $url);
 	  $this->ex( 'git push -u origin master');
 	}
@@ -252,8 +252,56 @@ class GitShell extends AppShell
 	    $this->gitPlugin( $plugin ['name'], 'pull');
 	  }
 	}
-	
 
+/**
+ * Hace un commit y un push
+ * Se puede indicar como argumento el nombre del branch (master por defecto)
+ *
+ * @example bin/cake cofree.git commit 0.3
+ * @return void
+ */
+  public function commit()
+  {
+    $branch = !empty( $this->args [0]) ? $this->args [0] : 'master';
+
+    $msg = $this->in( "Escribe un mensaje");
+
+    if( empty( $msg))
+    {
+      $this->out( "Es necesario indicar un mensaje");
+      die();
+    }
+
+
+    $this->ex( 'git commit -a -m "'. $msg .'"');
+    $this->ex( 'git push -u origin '. $branch);
+  }
+
+
+  public function pl_commit()
+  {    
+    if( !isset( $this->args [0]))
+    {
+      $this->out( 'Es necesario indicar como primer argumento un plugin');
+      die();
+    }
+    
+    $msg = $this->in( "Escribe un mensaje");
+
+    if( empty( $msg))
+    {
+      $this->out( "Es necesario indicar un mensaje");
+      die();
+    }
+
+    $branch = !empty( $this->args [1]) ? $this->args [1] : 'master';
+    $plugin = $this->args [0];
+    $this->__checkPlugin( $plugin);
+    $this->pluginCheckout( $plugin, $branch);
+
+    $this->gitPlugin( $plugin, 'commit -a -m "'. $msg .'"');
+    $this->gitPlugin( $plugin, 'push -u origin '. $branch);
+  }
 /**
  * Hace un checkout del branch en cada plugin, atendiendo a lo indicado en Configure::read( 'AppPlugins')
  *
@@ -294,5 +342,33 @@ class GitShell extends AppShell
     $File->write( $this->appDir ."Config/core.php\n");
     $File->write( $this->appDir ."Config/email.php\n");
   }
+ 
+/**
+ * Verifica que el plugin existe en la configuración
+ *
+ * @param string $plugin 
+ * @return boolean
+ */
+	private function __checkPlugin( $plugin)
+	{
+	  $exists = false;
+	  
+	  foreach( $this->plugins as $_plugin)
+	  {
+	    if( $_plugin ['name'] == $plugin)
+	    {
+	      $exists = true;
+	      break;
+	    }
+	  }
+	  
+	  if( !$exists)
+    {
+      $this->out( "El plugin $plugin no existe en la configuración. Asegúrate que has usado correctamente las mayúsculas.");
+      die();
+    }
+
+    return true;
+	}
 }
 ?>
