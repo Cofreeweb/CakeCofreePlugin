@@ -35,6 +35,69 @@ class GitShell extends AppShell
  */
   private $pluginsDir = null;
   
+/**
+ * Plugins disponibles
+ *
+ */
+  private $availablePlugins = array(
+      array(
+          "name" => "Cofree",
+          "url" => "https://github.com/Cofreeweb/CakeCofreePlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Acl",
+          "url" => "https://github.com/Cofreeweb/CakeAclPlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Comments",
+          "url" => "https://github.com/Cofreeweb/comments.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "I18n",
+          "url" => "https://github.com/Cofreeweb/CakeI18nPlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Upload",
+          "url" => "https://github.com/Cofreeweb/CakeUploadPlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Website",
+          "url" => "https://github.com/Cofreeweb/CakeWebsitePlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Management",
+          "url" => "https://github.com/Cofreeweb/CakeManagementPlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Search",
+          "url" => "https://github.com/Cofreeweb/search.git",
+          "branch" => "master"
+      )
+  );
+  
+  
+  private $folders = array(
+      'webroot/files/photos'
+  );
+  
+  private $ignoreFolders = array(
+      'tmp/cache/models',
+      'tmp/cache/persistent',
+      'tmp/cache/views',
+      'tmp/sessions',
+      'tmp/log',
+      'tmp/tests',
+      'webroot/files/photos'
+  );
+  
+  private $appDir = null;
 
 /**
  * Callback de Shell
@@ -45,9 +108,38 @@ class GitShell extends AppShell
   public function initialize() 
   {
     $app = str_replace( ROOT .'/', '', APP);
+    
+    if( !file_exists( APP . 'Config' .DS. 'plugins.php'))
+    {
+      $this->generatePluginsConfig();
+    }
+    
 		Configure::load( 'plugins');
 		$this->plugins = Configure::read( 'AppPlugins');
 		$this->pluginsDir = $app . 'Plugin'. DS;
+		$this->appDir = str_replace( ROOT .'/', '', APP);
+	}
+	
+	private function generatePluginsConfig()
+	{
+	  App::uses('File', 'Utility');
+	  
+	  $filecontent = "<?php\n\$config ['AppPlugins'] = array(\n";
+	  
+	  foreach( $this->availablePlugins as $plugin)
+	  {
+	    $bool = $this->in( "¿Quieres usar el plugin ". $plugin ['name'] . "?", array( 'y', 'n'), 'y');
+	    
+	    if( $bool == 'y')
+	    {
+	      $filecontent .= "  array(\n    'name' => '{$plugin ['name']}',\n    'url' => '{$plugin ['url']}',\n    'branch' => '{$plugin ['branch']}'\n  ),\n";
+	    }
+	  }
+	  
+	  $filecontent .= ");\n";
+	  
+	  $File = new File( APP . 'Config' .DS. 'plugins.php');
+	  $File->write( $filecontent);
 	}
 	
 /**
@@ -87,6 +179,8 @@ class GitShell extends AppShell
  */
 	public function install()
 	{
+	  $this->createFoldersFiles();
+	  $this->ignore();
 	  $url = $this->in( "Escribe la URL del repositorio");
 	  $this->ex( 'touch README.md');
 	  $this->ex( 'git init');
@@ -170,6 +264,34 @@ class GitShell extends AppShell
 	{
 	  $this->gitPlugin( $plugin, 'checkout '. $branch);
 	}
-
+  
+  private function createFoldersFiles()
+  {
+    App::uses('Folder', 'Utility');
+    App::uses('File', 'Utility');
+    
+    foreach( $this->folders as $folder)
+    {
+      new Folder( APP . $folder, true, 0777);
+      $this->ex( 'cp '. $this->appDir . 'Config/core.php ' . $this->appDir . 'Config/core.php.default');
+    }
+  }
+  
+  private function ignore()
+  {
+    App::uses('Folder', 'Utility');
+    App::uses('File', 'Utility');
+    
+    foreach( $this->ignoreFolders as $folder)
+    {
+      $File = new File( APP . $folder .'/.gitignore');
+      $File->write( "*\n!.gitignore");
+    }
+    
+    $File = new File( '.gitignore');
+    $File->write( $this->appDir ."Config/database.php\n");
+    $File->write( $this->appDir ."Config/core.php\n");
+    $File->write( $this->appDir ."Config/email.php\n");
+  }
 }
 ?>
