@@ -191,6 +191,9 @@ class GitShell extends AppShell
 	  $this->ex( 'cp '. $this->appDir . 'Config/core.php.default ' . $this->appDir . 'Config/core.php');
 	  $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
 	  $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
+	  
+	  $this->create_plugins();
+	  $this->__commit( 'Creado plugins', 'master');
 	}
 
 /**
@@ -275,6 +278,12 @@ class GitShell extends AppShell
       die();
     }
 
+    $this->__commit( $msg, $branch);
+  }
+  
+  private function __commit( $msg, $branch)
+  {
+    $this->ex( 'git add *');
     $this->ex( 'git commit -a -m "'. $msg .'"');
     $this->ex( 'git push -u origin '. $branch);
   }
