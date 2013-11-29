@@ -174,7 +174,7 @@ class GitShell extends AppShell
  * Inicializa la aplicación
  * Es necesario ejectuarlo una vez creado el proyecto en el repositiorio externo
  *
- * @example Console/cake cofree.git install
+ * @example bin/cake cofree.git install
  * @return void
  */
 	public function install()
@@ -193,7 +193,7 @@ class GitShell extends AppShell
 /**
  * Ver pluginCheckout()
  *
- * @example Console/cake cofree.git pl_checkout
+ * @example bin/cake cofree.git pl_checkout
  * @return void
  */
   public function pl_checkout()
@@ -226,7 +226,7 @@ class GitShell extends AppShell
  * Crea los plugins indicados en Configure::read( 'AppPlugins')
  *
  * @return void
- * @example Console/cake cofree.git create_plugins
+ * @example bin/cake cofree.git create_plugins
  */
 	public function create_plugins()
 	{
@@ -242,7 +242,7 @@ class GitShell extends AppShell
  * Actualiza los plugins indicados en Configure::read( 'AppPlugins')
  *
  * @return void
- * @example Console/cake cofree.git update_plugins
+ * @example bin/cake cofree.git update_plugins
  */
 	public function update_plugins()
 	{
@@ -272,12 +272,17 @@ class GitShell extends AppShell
       die();
     }
 
-
     $this->ex( 'git commit -a -m "'. $msg .'"');
     $this->ex( 'git push -u origin '. $branch);
   }
 
-
+/**
+ * Hace el commit&push de un plugin, que ha de indicarse como primer parámetro
+ * También se puede indicar como segundo parámetro el nombre del branch (master por defecto)
+ *
+ * @example bin/cake cofree.git pl_commit Management 2.0
+ * @return void
+ */
   public function pl_commit()
   {    
     if( !isset( $this->args [0]))
@@ -323,8 +328,9 @@ class GitShell extends AppShell
     foreach( $this->folders as $folder)
     {
       new Folder( APP . $folder, true, 0777);
-      $this->ex( 'cp '. $this->appDir . 'Config/core.php ' . $this->appDir . 'Config/core.php.default');
     }
+    
+    $this->ex( 'cp '. $this->appDir . 'Config/core.php ' . $this->appDir . 'Config/core.php.default');
   }
   
   private function ignore()
