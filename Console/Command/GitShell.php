@@ -152,7 +152,7 @@ class GitShell extends AppShell
   private function ex( $cmd)
   {
     $this->out( $cmd);
-    system( $cmd);
+    exec( $cmd);
   }
   
   
@@ -184,7 +184,6 @@ class GitShell extends AppShell
 	  $url = $this->in( "Escribe la URL del repositorio");
 	  $this->ex( 'touch README.md');
 	  $this->ex( 'git init');
-	  $this->ex( 'git add README.md');
 	  $this->ex( 'git commit -a -m "first commit"');
 	  $this->ex( 'git remote add origin '. $url);
 	  $this->ex( 'git push -u origin master');
@@ -331,6 +330,7 @@ class GitShell extends AppShell
     }
     
     $this->ex( 'cp '. $this->appDir . 'Config/core.php ' . $this->appDir . 'Config/core.php.default');
+    $this->ex( 'rm '. $this->appDir . 'Config/core.php');
   }
   
   private function ignore()
@@ -345,9 +345,11 @@ class GitShell extends AppShell
     }
     
     $File = new File( '.gitignore');
-    $File->write( $this->appDir ."Config/database.php\n");
-    $File->write( $this->appDir ."Config/core.php\n");
-    $File->write( $this->appDir ."Config/email.php\n");
+    $content =  $this->appDir ."Config/database.php\n" .
+                $this->appDir ."Config/core.php\n" .
+                $this->appDir ."Config/email.php\n";
+    
+    $File->write( $content);
   }
  
 /**
