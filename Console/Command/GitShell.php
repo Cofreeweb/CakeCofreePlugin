@@ -205,7 +205,7 @@ class GitShell extends AppShell
     }
     
     $plugin = $this->args [0];
-    
+        
     if( !isset( $this->plugins [$plugin]))
     {
       $this->out( "El plugin indicado no existe en la configuración. Asegúrate que has usado correctamente las mayúsculas.");
@@ -296,9 +296,10 @@ class GitShell extends AppShell
 
     $branch = !empty( $this->args [1]) ? $this->args [1] : 'master';
     $plugin = $this->args [0];
+    $config = $this->__getConfig( $plugin);
     $this->__checkPlugin( $plugin);
     $this->pluginCheckout( $plugin, $branch);
-
+    $this->gitPlugin( $config ['name'], 'remote set-url origin ' . $config ['url']);
     $this->gitPlugin( $plugin, 'commit -a -m "'. $msg .'"');
     $this->gitPlugin( $plugin, 'push -u origin '. $branch);
   }
@@ -369,6 +370,25 @@ class GitShell extends AppShell
     }
 
     return true;
+	}
+	
+/**
+ * Devuelve la configuración de un plugin, dado el nombre del mismo
+ *
+ * @param string $name 
+ * @return array
+ */
+	private function __getConfig( $name)
+	{
+	  foreach( $this->plugins as $plugin)
+	  {
+	    if( $plugin ['name'] == $name)
+	    {
+	      return $plugin;
+	    }
+	  }
+	  
+	  return false;
 	}
 }
 ?>
