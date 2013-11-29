@@ -42,9 +42,10 @@ class GitShell extends AppShell
  */
   public function initialize() 
   {
+    $app = str_replace( ROOT .'/', '', APP);
 		Configure::load( 'plugins');
 		$this->plugins = Configure::read( 'AppPlugins');
-		$this->pluginsDir = 'Plugin'. DS;
+		$this->pluginsDir = $app . 'Plugin'. DS;
 	}
 	
 /**
