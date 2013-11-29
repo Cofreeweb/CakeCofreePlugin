@@ -234,6 +234,7 @@ class GitShell extends AppShell
 	  {
 	    $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->pluginsDir . $plugin ['name']);
 	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
+	    $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
 	  }
 	}
 	
