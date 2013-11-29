@@ -1,5 +1,7 @@
 <?php
 /**
+ * GitShell
+ *
  * Shell de utilidades para gestionar un proyecto CakePHP con git
  *
  * Necesario usar en Config del proyecto un fichero plugins con el siguiente formato
