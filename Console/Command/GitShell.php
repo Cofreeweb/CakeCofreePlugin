@@ -238,9 +238,12 @@ class GitShell extends AppShell
 	{
 	  foreach( $this->plugins as $plugin)
 	  {
-	    $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->pluginsDir . $plugin ['name']);
-	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
-	    $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
+	    if( !CakePlugin::loaded( $plugin  ['name']))
+  	  {
+        $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->pluginsDir . $plugin ['name']);
+  	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
+  	    $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
+  	  }
 	  }
 	}
 	
