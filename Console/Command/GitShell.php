@@ -188,8 +188,8 @@ class GitShell extends AppShell
 	  $this->ex( 'git remote add origin '. $url);
 	  $this->ex( 'git push -u origin master');
 	  
-	  $this->copyfiles();
-	  $this->change_mod();
+	  $this->init();
+
 	  $this->create_plugins();
 	  $this->__commit( 'Creado plugins', 'master');
 	}
@@ -201,10 +201,7 @@ class GitShell extends AppShell
  * @return void
  */
   public function init()
-  {
-    $this->ex( 'git submodule init');
-    $this->ex( 'git submodule update');
-    
+  {    
     $this->copyfiles();
 	  $this->change_mod();
   }
