@@ -188,14 +188,55 @@ class GitShell extends AppShell
 	  $this->ex( 'git remote add origin '. $url);
 	  $this->ex( 'git push -u origin master');
 	  
-	  $this->ex( 'cp '. $this->appDir . 'Config/core.php.default ' . $this->appDir . 'Config/core.php');
-	  $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
-	  $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
-	  
+	  $this->copyfiles();
+	  $this->change_mod();
 	  $this->create_plugins();
 	  $this->__commit( 'Creado plugins', 'master');
 	}
-
+  
+/**
+ * Inicializa el proyecto después de un git clone
+ *
+ * @example bin/cake cofree.git init
+ * @return void
+ */
+  public function init()
+  {
+    $this->ex( 'git submodule init');
+    $this->ex( 'git submodule update');
+    
+    $this->copyfiles();
+	  $this->change_mod();
+  }
+  
+/**
+ * Cambia el mod a 777 de los directorios necesarios
+ *
+ * @example bin/cake cofree.git change_mod
+ * @return void
+ */
+  public function change_mod()
+  {
+    $this->ex( 'chmod 777 '. $this->appDir . 'tmp/logs');
+    $this->ex( 'chmod 777 '. $this->appDir . 'tmp/sessions');
+    $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/models');
+    $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/persistent');
+    $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/views');
+  }
+  
+/**
+ * Copia los ficheros ignorados en el repositorio git
+ *
+ * @example bin/cake cofree.git copyfiles
+ * @return void
+ */
+  public function copyfiles()
+  {
+    $this->ex( 'cp '. $this->appDir . 'Config/core.php.default ' . $this->appDir . 'Config/core.php');
+	  $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
+	  $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
+  }
+  
 /**
  * Ver pluginCheckout()
  *
