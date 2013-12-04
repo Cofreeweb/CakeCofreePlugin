@@ -79,6 +79,16 @@ class GitShell extends AppShell
           "name" => "Search",
           "url" => "https://github.com/Cofreeweb/search.git",
           "branch" => "master"
+      ),
+      array(
+          "name" => "Weather",
+          "url" => "https://github.com/Cofreeweb/CakeWeatherPlugin.git",
+          "branch" => "master"
+      ),
+      array(
+          "name" => "Geocoder",
+          "url" => "https://github.com/Cofreeweb/CakeGeocoderPlugin.git",
+          "branch" => "master"
       )
   );
   
@@ -219,6 +229,7 @@ class GitShell extends AppShell
     $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/models');
     $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/persistent');
     $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/views');
+    $this->ex( 'chmod 777 '. $this->appDir . 'webroot/files/photos');
   }
   
 /**
