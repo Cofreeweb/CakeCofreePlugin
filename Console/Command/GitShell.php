@@ -18,6 +18,9 @@
  * @author Alfonso Etxeberria
  */
 
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
+
 class GitShell extends AppShell 
 {
 
@@ -28,12 +31,6 @@ class GitShell extends AppShell
  */
   private $plugins = array();
   
-/**
- * El directorio de los plugins
- *
- * @access private
- */
-  private $pluginsDir = null;
   
 /**
  * Plugins disponibles
@@ -43,52 +40,74 @@ class GitShell extends AppShell
       array(
           "name" => "Cofree",
           "url" => "https://github.com/Cofreeweb/CakeCofreePlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Acl",
           "url" => "https://github.com/Cofreeweb/CakeAclPlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Comments",
           "url" => "https://github.com/Cofreeweb/comments.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "I18n",
           "url" => "https://github.com/Cofreeweb/CakeI18nPlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Upload",
           "url" => "https://github.com/Cofreeweb/CakeUploadPlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Website",
           "url" => "https://github.com/Cofreeweb/CakeWebsitePlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Management",
           "url" => "https://github.com/Cofreeweb/CakeManagementPlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Search",
           "url" => "https://github.com/Cofreeweb/search.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Weather",
           "url" => "https://github.com/Cofreeweb/CakeWeatherPlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
       ),
       array(
           "name" => "Geocoder",
           "url" => "https://github.com/Cofreeweb/CakeGeocoderPlugin.git",
-          "branch" => "master"
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+        "name" => "AssetCompress",
+        "url" => "https://github.com/Cofreeweb/asset_compress.git",
+        "branch" => "master",
+        "type" => 'plugin'
+      ),
+      array(
+        "name" => "scssphp",
+        "url" => "https://github.com/Cofreeweb/scssphp.git",
+        "branch" => "master",
+        "type" => 'vendor'
       )
   );
   
@@ -126,7 +145,6 @@ class GitShell extends AppShell
     
 		Configure::load( 'plugins');
 		$this->plugins = Configure::read( 'AppPlugins');
-		$this->pluginsDir = $app . 'Plugin'. DS;
 		$this->appDir = str_replace( ROOT .'/', '', APP);
 	}
 	
@@ -142,7 +160,7 @@ class GitShell extends AppShell
 	    
 	    if( $bool == 'y')
 	    {
-	      $filecontent .= "  array(\n    'name' => '{$plugin ['name']}',\n    'url' => '{$plugin ['url']}',\n    'branch' => '{$plugin ['branch']}'\n  ),\n";
+	      $filecontent .= "  '{$plugin ['name']}',\n";
 	    }
 	  }
 	  
@@ -176,7 +194,7 @@ class GitShell extends AppShell
  */
   private function gitPlugin( $plugin, $cmd)
   {
-    $this->ex( 'git --git-dir='. $this->pluginsDir . $plugin .'/.git '. $cmd);
+    $this->ex( 'git --git-dir='. $this->__pluginDir( $plugin) .'/.git '. $cmd);
   }
  
 /**
@@ -261,7 +279,7 @@ class GitShell extends AppShell
     
     $plugin = $this->args [0];
         
-    if( !isset( $this->plugins [$plugin]))
+    if( !$this->__getConfig( $plugin))
     {
       $this->out( "El plugin indicado no existe en la configuración. Asegúrate que has usado correctamente las mayúsculas.");
     }
@@ -269,7 +287,7 @@ class GitShell extends AppShell
     if( !isset( $this->args [1]))
     {
       $branch = !isset( $this->args [1]) 
-        ? $this->plugins [$plugin] 
+        ? 'master'
         : $this->args [1];
     }
     
@@ -285,17 +303,19 @@ class GitShell extends AppShell
  */
 	public function create_plugins()
 	{
-	  foreach( $this->plugins as $plugin)
+	  foreach( $this->plugins as $name)
 	  {
-	    if( !CakePlugin::loaded( $plugin  ['name']))
+	    if( !$this->__pluginExists( $name))
   	  {
-        $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->pluginsDir . $plugin ['name']);
+  	    $plugin = $this->__getConfig( $name);
+        $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->__pluginDir( $plugin ['name']));
   	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
   	    $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
   	  }
 	  }
 	}
 	
+		
 /**
  * Actualiza los plugins indicados en Configure::read( 'AppPlugins')
  *
@@ -304,8 +324,9 @@ class GitShell extends AppShell
  */
 	public function update_plugins()
 	{
-	  foreach( $this->plugins as $plugin)
+	  foreach( $this->plugins as $name)
 	  {
+	    $plugin = $this->__getConfig( $name);
 	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
 	    $this->gitPlugin( $plugin ['name'], 'pull');
 	  }
@@ -386,9 +407,6 @@ class GitShell extends AppShell
   
   private function createFoldersFiles()
   {
-    App::uses('Folder', 'Utility');
-    App::uses('File', 'Utility');
-    
     foreach( $this->folders as $folder)
     {
       new Folder( APP . $folder, true, 0777);
@@ -423,26 +441,34 @@ class GitShell extends AppShell
  * @param string $plugin 
  * @return boolean
  */
-	private function __checkPlugin( $plugin)
+	private function __checkPlugin( $name)
 	{
-	  $exists = false;
-	  
-	  foreach( $this->plugins as $_plugin)
-	  {
-	    if( $_plugin ['name'] == $plugin)
-	    {
-	      $exists = true;
-	      break;
-	    }
-	  }
-	  
-	  if( !$exists)
+	  if( !in_array( $name, $this->plugins))
     {
       $this->out( "El plugin $plugin no existe en la configuración. Asegúrate que has usado correctamente las mayúsculas.");
       die();
     }
 
     return true;
+	}
+	
+	private function __pluginDir( $plugin)
+	{
+	  if( !is_array( $plugin))
+	  {
+  	  $plugin = $this->__getConfig( $plugin);
+	  }
+	  
+	  $dir = $this->appDir . Inflector::camelize( $plugin ['type']) .DS. $plugin ['name'];
+	  return $dir;
+	}
+	
+	private function __pluginExists( $name)
+	{
+	  $plugin = $this->__getConfig ($name);
+	  $dir = $this->__pluginDir( $plugin);
+	  $this->out( $dir);
+	  return is_dir( $dir);
 	}
 	
 /**
@@ -453,7 +479,12 @@ class GitShell extends AppShell
  */
 	private function __getConfig( $name)
 	{
-	  foreach( $this->plugins as $plugin)
+	  if( is_array( $name))
+	  {
+	    return $name;
+	  }
+	  
+	  foreach( $this->availablePlugins as $plugin)
 	  {
 	    if( $plugin ['name'] == $name)
 	    {
