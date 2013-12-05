@@ -143,33 +143,33 @@ class GitShell extends AppShell
       $this->generatePluginsConfig();
     }
     
-		Configure::load( 'plugins');
-		$this->plugins = Configure::read( 'AppPlugins');
-		$this->appDir = str_replace( ROOT .'/', '', APP);
-	}
-	
-	private function generatePluginsConfig()
-	{
-	  App::uses('File', 'Utility');
-	  
-	  $filecontent = "<?php\n\$config ['AppPlugins'] = array(\n";
-	  
-	  foreach( $this->availablePlugins as $plugin)
-	  {
-	    $bool = $this->in( "¿Quieres usar el plugin ". $plugin ['name'] . "?", array( 'y', 'n'), 'y');
-	    
-	    if( $bool == 'y')
-	    {
-	      $filecontent .= "  '{$plugin ['name']}',\n";
-	    }
-	  }
-	  
-	  $filecontent .= ");\n";
-	  
-	  $File = new File( APP . 'Config' .DS. 'plugins.php');
-	  $File->write( $filecontent);
-	}
-	
+    Configure::load( 'plugins');
+    $this->plugins = Configure::read( 'AppPlugins');
+    $this->appDir = str_replace( ROOT .'/', '', APP);
+  }
+  
+  private function generatePluginsConfig()
+  {
+    App::uses('File', 'Utility');
+    
+    $filecontent = "<?php\n\$config ['AppPlugins'] = array(\n";
+    
+    foreach( $this->availablePlugins as $plugin)
+    {
+      $bool = $this->in( "¿Quieres usar el plugin ". $plugin ['name'] . "?", array( 'y', 'n'), 'y');
+      
+      if( $bool == 'y')
+      {
+        $filecontent .= "  '{$plugin ['name']}',\n";
+      }
+    }
+    
+    $filecontent .= ");\n";
+    
+    $File = new File( APP . 'Config' .DS. 'plugins.php');
+    $File->write( $filecontent);
+  }
+  
 /**
  * Ejectua un comando de shell
  *
@@ -205,22 +205,22 @@ class GitShell extends AppShell
  * @example bin/cake cofree.git install
  * @return void
  */
-	public function install()
-	{
-	  $this->createFoldersFiles();
-	  $this->ignore();
-	  $url = $this->in( "Escribe la URL del repositorio");
-	  $this->ex( 'touch README.md');
-	  $this->ex( 'git init');
-	  $this->ex( 'git commit -a -m "first commit"');
-	  $this->ex( 'git remote add origin '. $url);
-	  $this->ex( 'git push -u origin master');
-	  
-	  $this->init();
+  public function install()
+  {
+    $this->createFoldersFiles();
+    $this->ignore();
+    $url = $this->in( "Escribe la URL del repositorio");
+    $this->ex( 'touch README.md');
+    $this->ex( 'git init');
+    $this->ex( 'git commit -a -m "first commit"');
+    $this->ex( 'git remote add origin '. $url);
+    $this->ex( 'git push -u origin master');
+    
+    $this->init();
 
-	  $this->create_plugins();
-	  $this->__commit( 'Creado plugins', 'master');
-	}
+    $this->create_plugins();
+    $this->__commit( 'Creado plugins', 'master');
+  }
   
 /**
  * Inicializa el proyecto después de un git clone
@@ -231,7 +231,7 @@ class GitShell extends AppShell
   public function init()
   {    
     $this->copyfiles();
-	  $this->change_mod();
+    $this->change_mod();
   }
   
 /**
@@ -259,8 +259,8 @@ class GitShell extends AppShell
   public function copyfiles()
   {
     $this->ex( 'cp '. $this->appDir . 'Config/core.php.default ' . $this->appDir . 'Config/core.php');
-	  $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
-	  $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
+    $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
+    $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
   }
   
 /**
@@ -294,43 +294,43 @@ class GitShell extends AppShell
     $this->pluginCheckout( $plugin, $branch);
   }
 
-	
+  
 /**
  * Crea los plugins indicados en Configure::read( 'AppPlugins')
  *
  * @return void
  * @example bin/cake cofree.git create_plugins
  */
-	public function create_plugins()
-	{
-	  foreach( $this->plugins as $name)
-	  {
-	    if( !$this->__pluginExists( $name))
-  	  {
-  	    $plugin = $this->__getConfig( $name);
+  public function create_plugins()
+  {
+    foreach( $this->plugins as $name)
+    {
+      if( !$this->__pluginExists( $name))
+      {
+        $plugin = $this->__getConfig( $name);
         $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->__pluginDir( $plugin ['name']));
-  	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
-  	    $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
-  	  }
-	  }
-	}
-	
-		
+        $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
+        $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
+      }
+    }
+  }
+  
+    
 /**
  * Actualiza los plugins indicados en Configure::read( 'AppPlugins')
  *
  * @return void
  * @example bin/cake cofree.git update_plugins
  */
-	public function update_plugins()
-	{
-	  foreach( $this->plugins as $name)
-	  {
-	    $plugin = $this->__getConfig( $name);
-	    $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
-	    $this->gitPlugin( $plugin ['name'], 'pull');
-	  }
-	}
+  public function update_plugins()
+  {
+    foreach( $this->plugins as $name)
+    {
+      $plugin = $this->__getConfig( $name);
+      $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
+      $this->gitPlugin( $plugin ['name'], 'pull');
+    }
+  }
 
 /**
  * Hace un commit y un push
@@ -400,10 +400,10 @@ class GitShell extends AppShell
  * @param string $branch 
  * @return void
  */
-	private function pluginCheckout( $plugin, $branch)
-	{
-	  $this->gitPlugin( $plugin, 'checkout '. $branch);
-	}
+  private function pluginCheckout( $plugin, $branch)
+  {
+    $this->gitPlugin( $plugin, 'checkout '. $branch);
+  }
   
   private function createFoldersFiles()
   {
@@ -441,58 +441,58 @@ class GitShell extends AppShell
  * @param string $plugin 
  * @return boolean
  */
-	private function __checkPlugin( $name)
-	{
-	  if( !in_array( $name, $this->plugins))
+  private function __checkPlugin( $name)
+  {
+    if( !in_array( $name, $this->plugins))
     {
       $this->out( "El plugin $plugin no existe en la configuración. Asegúrate que has usado correctamente las mayúsculas.");
       die();
     }
 
     return true;
-	}
-	
-	private function __pluginDir( $plugin)
-	{
-	  if( !is_array( $plugin))
-	  {
-  	  $plugin = $this->__getConfig( $plugin);
-	  }
-	  
-	  $dir = $this->appDir . Inflector::camelize( $plugin ['type']) .DS. $plugin ['name'];
-	  return $dir;
-	}
-	
-	private function __pluginExists( $name)
-	{
-	  $plugin = $this->__getConfig ($name);
-	  $dir = $this->__pluginDir( $plugin);
-	  $this->out( $dir);
-	  return is_dir( $dir);
-	}
-	
+  }
+  
+  private function __pluginDir( $plugin)
+  {
+    if( !is_array( $plugin))
+    {
+      $plugin = $this->__getConfig( $plugin);
+    }
+    
+    $dir = $this->appDir . Inflector::camelize( $plugin ['type']) .DS. $plugin ['name'];
+    return $dir;
+  }
+  
+  private function __pluginExists( $name)
+  {
+    $plugin = $this->__getConfig ($name);
+    $dir = $this->__pluginDir( $plugin);
+    $this->out( $dir);
+    return is_dir( $dir);
+  }
+  
 /**
  * Devuelve la configuración de un plugin, dado el nombre del mismo
  *
  * @param string $name 
  * @return array
  */
-	private function __getConfig( $name)
-	{
-	  if( is_array( $name))
-	  {
-	    return $name;
-	  }
-	  
-	  foreach( $this->availablePlugins as $plugin)
-	  {
-	    if( $plugin ['name'] == $name)
-	    {
-	      return $plugin;
-	    }
-	  }
-	  
-	  return false;
-	}
+  private function __getConfig( $name)
+  {
+    if( is_array( $name))
+    {
+      return $name;
+    }
+    
+    foreach( $this->availablePlugins as $plugin)
+    {
+      if( $plugin ['name'] == $name)
+      {
+        return $plugin;
+      }
+    }
+    
+    return false;
+  }
 }
 ?>
