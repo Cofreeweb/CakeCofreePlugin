@@ -218,7 +218,7 @@ class GitShell extends AppShell
     
     $this->init();
 
-    $this->create_plugins();
+    $this->install_plugins();
     $this->__commit( 'Creado plugins', 'master');
   }
   
@@ -299,15 +299,18 @@ class GitShell extends AppShell
  * Crea los plugins indicados en Configure::read( 'AppPlugins')
  *
  * @return void
- * @example bin/cake cofree.git create_plugins
+ * @example bin/cake cofree.git install_plugins
  */
-  public function create_plugins()
+  public function install_plugins()
   {
+    $this->__uninstallPlugins();
+    
     foreach( $this->plugins as $name)
     {
       if( !$this->__pluginExists( $name))
       {
         $plugin = $this->__getConfig( $name);
+        $this->out( '----- Instalando '. $this->__pluginDir( $plugin ['name']) .' -----');
         $this->ex( 'git submodule add '. $plugin ['url'] .' '. $this->__pluginDir( $plugin ['name']));
         $this->pluginCheckout( $plugin ['name'], $plugin ['branch']);
         $this->gitPlugin( $plugin ['name'], 'remote set-url origin ' . $plugin ['url']);
@@ -467,7 +470,6 @@ class GitShell extends AppShell
   {
     $plugin = $this->__getConfig ($name);
     $dir = $this->__pluginDir( $plugin);
-    $this->out( $dir);
     return is_dir( $dir);
   }
   
@@ -493,6 +495,24 @@ class GitShell extends AppShell
     }
     
     return false;
+  }
+  
+  
+  private function __uninstallPlugins()
+  {
+    $availables = Hash::extract( $this->availablePlugins, '{n}.name');
+    $removes = array_diff( $availables, $this->plugins);
+    
+    foreach( $removes as $name)
+    {
+      if( $this->__pluginExists( $name))
+      {
+        $this->out( '----- Desinstalando '. $this->__pluginDir( $name) .' -----');
+        $this->ex( 'git submodule deinit '. $this->__pluginDir( $name));
+        $this->ex( 'git rm '. $this->__pluginDir( $name));
+        $this->ex( 'rm -rf .git/modules/'. $this->__pluginDir( $name));
+      }
+    }
   }
 }
 ?>

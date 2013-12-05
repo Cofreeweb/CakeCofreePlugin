@@ -5,7 +5,9 @@ CofreePlugin
 ## Creación de proyectos
 
 Para la creación de proyectos:
-
+  
+  1. Instalar la aplicación con https://github.com/Cofreeweb/CakeInitProject
+  2. Situados en /path/to/project hacemos bin/cake cofree.git install
 
 ## Instalación de proyectos
 
