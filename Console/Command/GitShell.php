@@ -114,6 +114,12 @@ class GitShell extends AppShell
         "url" => "https://github.com/Cofreeweb/CakeRatingPlugin.git",
         "branch" => "master",
         "type" => 'plugin'
+      ),
+      array(
+        "name" => "Recaptcha",
+        "url" => "https://github.com/Cofreeweb/recaptcha.git",
+        "branch" => "master",
+        "type" => 'plugin'
       )
   );
   
