@@ -108,6 +108,12 @@ class GitShell extends AppShell
         "url" => "https://github.com/Cofreeweb/scssphp.git",
         "branch" => "master",
         "type" => 'vendor'
+      ),
+      array(
+        "name" => "Rating",
+        "url" => "https://github.com/Cofreeweb/CakeRatingPlugin.git",
+        "branch" => "master",
+        "type" => 'plugin'
       )
   );
   
