@@ -7,7 +7,7 @@
  */
 App::uses('CakeEmail', 'Network/Email');
 
-class EmailSender extends Object
+class EmailSender
 {
 
 /**
@@ -15,22 +15,6 @@ class EmailSender extends Object
  * Es modificada por el método configure() de la class que lo implementa
  */
   public static $name;
-  
-/**
- * Configuración de la class
- * Una vez declarada la class que implementa a EmailSender, es necesario llamar (en el mismo fichero) a 
- * EmailSender::configure( array(
- *    'class' => 'NombreClase',
- *     
- * ))
- *
- * @param array $data 
- * @return void
- */
-  public function configure( $data)
-  {
-    self::$name = $data ['class'];
-  }
   
   public function getInstance()
   {
@@ -71,11 +55,11 @@ class EmailSender extends Object
       $template ['template'] .' ('. $template ['layout'] .')',
       $e->getMessage(),
       gethostname());
-      $this->log( $result, LOG_DEBUG);
+      CakeLog::write( $result, LOG_DEBUG);
     }
   }
   
-  public function send( $method)
+  public static function send( $method)
   { 
     $args	= func_get_args();
     $method = $args [0];
@@ -83,35 +67,37 @@ class EmailSender extends Object
     unset( $args [0]);
     $args [0] = $Email;
     ksort( $args);
-    call_user_func_array( array( self::$name, $method), $args);
-    return self::sendMail( $Email);
+    call_user_func_array( array( get_called_class(), $method), $args);
+    
+    if( Configure::read( 'debug') > 0)
+    {
+      return self::sendMail( $Email);
+    }
+    else
+    {
+      ClassRegistry::init( 'Cofree.RabbitMail')->publish( serialize( $Email), 'email_sender.email_sender', AMQP_DURABLE, 'email_sender');      
+    }
   }
-
-
-/**
- * Enviado después del registro
- *
- * @param array data $user 
- * @return void
- * @since Ebident 0.1
- */
-  protected function registration( CakeEmail $Email, $user)
+  
+  public static function consume()
   {
-    $Email->subject( __( "¡Ebident te da la bienvenida!"));
+    $queue = ClassRegistry::init( 'Cofree.RabbitMail')->consumeQueue( 'email_sender.email_sender', 'email_sender', AMQP_DURABLE);
+    
+    $queue->consume( function( $envelope, $queue){
+        $response = $envelope->getBody();
+        $queue->ack( $envelope->getDeliveryTag());
         
-    $link = Router::url( array(
-        'plugin' => 'acl_management',
-        'controller' => 'users',
-        'action' => 'confirm_register',
-        $user ['User']['id'],
-        $user ['User']['key']
-    ), true);
-		
-		$Email->viewVars( compact( 'link'));
-		
-    $Email->template( 'Users/registration', 'users');
-    $Email->to( $user ['User']['email']);
-    $Email->viewVars( compact( 'user'));
+        // Creamos una instancia para que se autocarguen todas las clases necesarias. 
+        // Si no lo hacemos el objeto unserializado estará incompleto.
+        new CakeEmail( 'default');
+        $Email = unserialize( $response);
+        
+        if( $Email instanceof CakeEmail)
+        {
+          EmailSender::sendMail( $Email);
+        }
+    });
   }
+
   
 }
