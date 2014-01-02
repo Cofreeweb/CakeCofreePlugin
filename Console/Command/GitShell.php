@@ -411,6 +411,7 @@ class GitShell extends AppShell
     $this->__checkPlugin( $plugin);
     $this->pluginCheckout( $plugin, $branch);
     $this->gitPlugin( $config ['name'], 'remote set-url origin ' . $config ['url']);
+    $this->gitPlugin( $plugin, 'add *');
     $this->gitPlugin( $plugin, 'commit -a -m "'. $msg .'"');
     $this->gitPlugin( $plugin, 'push -u origin '. $branch);
   }
