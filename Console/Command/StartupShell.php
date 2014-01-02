@@ -9,6 +9,12 @@ class StartupShell extends AppShell
   public $groups = array();
   
   
+/**
+ * Idiomas por defecto
+ *
+ * @var string
+ */
+  public $languages = array();
   
 /**
  * Lanza un comando system() en el shell
@@ -64,6 +70,11 @@ class StartupShell extends AppShell
     if( in_array( 'Comments', $plugins))
     {
       $this->schemaCreate( '--plugin comments --name comments');
+    }
+    
+    if( in_array( 'I18n', $plugins) && !empty( $this->languages))
+    {
+      $this->languages();
     }
     
     // Plugin Acl (por defecto tiene que estar siempre activo)
@@ -147,5 +158,23 @@ class StartupShell extends AppShell
     
     // Añade un usuario
     $this->cmd( 'bin/cake acl.acl_mgm add_user');
+  }
+  
+  
+  public function languages()
+  {
+    $this->out( 'Creando idiomas...');
+    
+    // Creando idiomas por defecto
+    $Locale = ClassRegistry::init( 'I18n.Locale');
+    
+    foreach( $this->languages as $lang => $name)
+    {
+      $Locale->create();
+      $Locale->save( array(
+          'iso2' => $lang,
+          'name' => $name
+      ));      
+    }
   }
 }
