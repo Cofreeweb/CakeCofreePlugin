@@ -126,6 +126,12 @@ class GitShell extends AppShell
         "url" => "https://github.com/Cofreeweb/utility.git",
         "branch" => "master",
         "type" => 'plugin'
+      ),
+      array(
+        "name" => "Setting",
+        "url" => "https://github.com/Cofreeweb/CakeSettingPlugin.git",
+        "branch" => "master",
+        "type" => 'plugin'
       )
   );
   
