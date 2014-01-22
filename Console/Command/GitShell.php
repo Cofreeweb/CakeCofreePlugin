@@ -147,7 +147,7 @@ class GitShell extends AppShell
       'tmp/sessions',
       'tmp/log',
       'tmp/tests',
-      'webroot/files/photos'
+      'webroot/files'
   );
   
   private $appDir = null;
