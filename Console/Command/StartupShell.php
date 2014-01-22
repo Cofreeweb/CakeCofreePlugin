@@ -69,7 +69,7 @@ class StartupShell extends AppShell
     // Plugin Comments
     if( in_array( 'Comments', $plugins))
     {
-      $this->schemaCreate( '--plugin comments --name comments');
+      $this->schemaCreate( '--plugin Comments --name comments');
     }
     
     if( in_array( 'I18n', $plugins) && !empty( $this->languages))
@@ -82,7 +82,7 @@ class StartupShell extends AppShell
     
     // Sincronización de los controllers/actions de ACL
     $this->out( 'Sincronizando acl...');
-    $this->cmd( 'bin/cake acl.acl_mgm sync');
+    $this->cmd( 'bin/cake Acl.acl_mgm sync');
         
     // Creando grupo Admin
     $Group = ClassRegistry::init( 'Acl.Group');
