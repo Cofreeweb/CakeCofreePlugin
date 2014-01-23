@@ -171,13 +171,15 @@ class StartupShell extends AppShell
   {
     $this->out( 'Creando idiomas...');
     
+    App::uses( 'Language', 'I18n.Model');
+    
     // Creando idiomas por defecto
-    $Locale = ClassRegistry::init( 'I18n.Locale');
+    $Language = new Language;
     
     foreach( $this->languages as $lang => $name)
     {
-      $Locale->create();
-      $Locale->save( array(
+      $Language->create();
+      $Language->save( array(
           'iso2' => $lang,
           'name' => $name
       ));      
