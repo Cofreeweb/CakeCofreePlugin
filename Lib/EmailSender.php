@@ -75,7 +75,8 @@ class EmailSender
     }
     else
     {
-      ClassRegistry::init( 'Cofree.RabbitMail')->publish( serialize( $Email), 'email_sender.email_sender', AMQP_DURABLE, 'email_sender');      
+      return self::sendMail( $Email);
+      // ClassRegistry::init( 'Cofree.RabbitMail')->publish( serialize( $Email), 'email_sender.email_sender', AMQP_DURABLE, 'email_sender');      
     }
   }
   
