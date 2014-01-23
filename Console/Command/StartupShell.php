@@ -72,6 +72,12 @@ class StartupShell extends AppShell
       $this->schemaCreate( '--plugin Comments --name comments');
     }
     
+    // Plugin Setting
+    if( in_array( 'Setting', $plugins))
+    {
+      $this->schemaCreate( '--plugin Setting --name settings');
+    }
+    
     if( in_array( 'I18n', $plugins) && !empty( $this->languages))
     {
       $this->languages();
