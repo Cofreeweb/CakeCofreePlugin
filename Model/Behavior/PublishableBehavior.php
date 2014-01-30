@@ -29,6 +29,7 @@ class PublishableBehavior extends ModelBehavior
  */
   function beforeFind( Model $Model, $query)
   {
+    // Si estás en el navegador
     if( class_exists( 'Router'))
     {
       $params = Router::getParams();
