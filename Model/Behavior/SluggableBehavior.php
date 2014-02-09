@@ -25,7 +25,7 @@ class SluggableBehavior extends ModelBehavior {
 
     function beforeSave( Model $model) 
     {
-      if( empty( $model->id))
+      if( empty( $model->id) || $this->_settings[$model->alias]['overwrite'])
       {
         if( $this->_settings [$model->alias]['type'] == 'string')
         {
@@ -90,7 +90,6 @@ class SluggableBehavior extends ModelBehavior {
           $hasFields = false;
         }
       }
-
       if ($hasFields && $model->hasField($slugfield) && ($this->_settings[$model->alias]['overwrite'] || empty($model->id))) {
           $toSlug = array();
 
