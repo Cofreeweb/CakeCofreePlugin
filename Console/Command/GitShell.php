@@ -145,6 +145,12 @@ class GitShell extends AppShell
         "branch" => "master",
         "type" => 'vendor'
       ),
+      array(
+        "name" => "Chart",
+        "url" => "https://github.com/Cofreeweb/CakeChart  Plugin.git",
+        "branch" => "master",
+        "type" => 'plugin'
+      ),
   );
   
   
