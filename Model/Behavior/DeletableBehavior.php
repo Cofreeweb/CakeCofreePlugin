@@ -62,7 +62,7 @@ class DeletableBehavior extends ModelBehavior
 				$Model->updateCounterCache($keys[$Model->alias]);
 			}
 		}
-		
+
     $Model->saveField( 'deleted', 1); 
     return false;
   }
