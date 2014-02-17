@@ -36,7 +36,10 @@ class ContentableBehavior extends ModelBehavior
   function beforeFind( Model $Model, $query)
   {
     // Siempre le suma la clave para el tipo de contenido
-    $query ['conditions'][$Model->alias .'.content_type'] = $Model->name;    
+    if( !isset( $query ['conditions'][$Model->alias .'.content_type']))
+    {
+      $query ['conditions'][$Model->alias .'.content_type'] = $Model->name;    
+    }
     return $query;  
   }
   

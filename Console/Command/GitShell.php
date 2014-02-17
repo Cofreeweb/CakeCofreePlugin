@@ -147,7 +147,7 @@ class GitShell extends AppShell
       ),
       array(
         "name" => "Chart",
-        "url" => "https://github.com/Cofreeweb/CakeChart  Plugin.git",
+        "url" => "https://github.com/Cofreeweb/CakeChartPlugin.git",
         "branch" => "master",
         "type" => 'plugin'
       ),
