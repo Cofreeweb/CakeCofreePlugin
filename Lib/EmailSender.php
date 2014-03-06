@@ -35,6 +35,11 @@ class EmailSender
     return $Email;
   }
   
+  public function changeLanguage( $lang)
+  {
+    Configure::write( 'Config.language', $lang);
+  }
+  
   public function sendMail( CakeEmail $Email)
   {
     try {
