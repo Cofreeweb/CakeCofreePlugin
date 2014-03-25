@@ -12,12 +12,12 @@
 class DeletableBehavior extends ModelBehavior
 {
   
-  public function beforeValidate( Model $Model, $query)
-  {
-    $Model->data [$Model->alias .'.delete'] = array( 0, 1);
-    
-    return parent::beforeValidate( $Model);
-  }
+  // public function beforeValidate( Model $Model, $query)
+  // {
+  //   $Model->data [$Model->alias .'.deleted'] = array( 0, 1);
+  //   
+  //   return parent::beforeValidate( $Model);
+  // }
 
 /**
  * 

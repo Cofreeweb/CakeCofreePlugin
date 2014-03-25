@@ -157,6 +157,36 @@ class GitShell extends AppShell
         "branch" => "master",
         "type" => 'plugin'
       ),
+      array(
+          "name" => "Blog",
+          "url" => "https://github.com/Cofreeweb/CakeBlogPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+          "name" => "Section",
+          "url" => "https://github.com/Cofreeweb/CakeSectionPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+          "name" => "Angular",
+          "url" => "https://github.com/Cofreeweb/CakeAngularPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+          "name" => "Mongodb",
+          "url" => "https://github.com/Cofreeweb/CakeMongodbPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+          "name" => "Entry",
+          "url" => "https://github.com/Cofreeweb/CakeEntryPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
   );
   
   
