@@ -16,6 +16,23 @@ class StartupShell extends AppShell
  */
   public $languages = array();
   
+  
+/**
+ * La conexión a la base de datos cuando se hacen los schemas
+ *
+ * @var string
+ */
+  public $dbConnection = 'default';
+  
+  
+  public function startup()
+  {
+    if( !empty( $this->params ['connection']))
+    {
+      $this->dbConnection = $this->params ['connection'];
+    }
+  }
+  
 /**
  * Lanza un comando system() en el shell
  *
@@ -37,7 +54,7 @@ class StartupShell extends AppShell
  */
   public function schemaCreate( $cmd)
   {
-    $this->cmd( 'bin/cake schema create '. $cmd);
+    $this->cmd( 'bin/cake schema create '. $cmd . ' -c '. $this->dbConnection);
   }
   
 /**
@@ -91,7 +108,10 @@ class StartupShell extends AppShell
     $this->cmd( 'bin/cake Acl.acl_mgm sync');
         
     // Creando grupo Admin
-    $Group = ClassRegistry::init( 'Acl.Group');
+    $Group = ClassRegistry::init( array(
+        'class' => 'Acl.Group',
+        'ds' => $this->dbConnection
+    ));
     
     $Group->create();
     $Group->save( array(
@@ -100,7 +120,10 @@ class StartupShell extends AppShell
     ));
     
     // Otorgando permisos a Controller para el grupo Admin
-    $ArosAco = ClassRegistry::init( 'ArosAco');
+    $ArosAco = ClassRegistry::init( array(
+        'class' => 'ArosAco',
+        'ds' => $this->dbConnection
+    ));
     
     $ArosAco->save( array(
         'aro_id' => 1,
@@ -130,8 +153,14 @@ class StartupShell extends AppShell
       
       if( is_array( $acos))
       {
-        $Aco = ClassRegistry::init( 'Aco');
-        $Aro = ClassRegistry::init( 'Aro');
+        $Aco = ClassRegistry::init( array(
+            'class' => 'Aco',
+            'ds' => $this->dbConnection
+        ));
+        $Aro = ClassRegistry::init( array(
+            'class' => 'Aro',
+            'ds' => $this->dbConnection
+        ));
         
         $node = $Aro->node( array(
             'foreign_key' => $Group->id,
@@ -174,7 +203,10 @@ class StartupShell extends AppShell
     App::uses( 'Language', 'I18n.Model');
     
     // Creando idiomas por defecto
-    $Language = new Language;
+    $Language = ClassRegistry::init( array(
+        'class' => 'I18n.Language',
+        'ds' => $this->dbConnection
+    ));
     
     foreach( $this->languages as $lang => $name)
     {
@@ -184,5 +216,22 @@ class StartupShell extends AppShell
           'name' => $name
       ));      
     }
+  }
+  
+/**
+ * Define las opciones del shell
+ * Ver en core Console/ConsoleOptionParser::addOption()
+ *
+ * @return void
+ */
+  public function getOptionParser()
+  {
+    $parser = parent::getOptionParser();
+    $parser->addOption( 'connection', array(
+        'short' => 'c'
+    ));
+    
+    return $parser;
+   
   }
 }
