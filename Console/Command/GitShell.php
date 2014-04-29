@@ -187,6 +187,24 @@ class GitShell extends AppShell
           "branch" => "master",
           "type" => 'plugin'
       ),
+      array(
+          "name" => "Configuration",
+          "url" => "https://github.com/Cofreeweb/CakeConfigurationPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+          "name" => "Dictionary",
+          "url" => "https://github.com/Cofreeweb/CakeDictionaryPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
+      array(
+          "name" => "Fixturize",
+          "url" => "https://github.com/Cofreeweb/cakephp-fixturize.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
   );
   
   

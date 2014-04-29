@@ -9,9 +9,18 @@
 class JsonableBehavior extends ModelBehavior
 {
   
+/**
+ * Opciones por defecto
+ *
+ * @var array
+ */
+  private $__defaults = array(
+    'fields' => array()
+  );
+  
   public function setup( Model $model, $settings = array())
   {
-    $this->settings = $settings;
+    $this->settings = array_merge( $this->__defaults, $settings);
   }
   
   public function beforeSave( Model $model)
@@ -29,6 +38,11 @@ class JsonableBehavior extends ModelBehavior
   
   public function afterFind( Model $model, $results)
   {
+    if( empty( $this->settings ['fields']))
+    {
+      return $results;
+    }
+    
     if( isset( $results [0][$model->alias]))
     {
       foreach( $this->settings ['fields'] as $field)
@@ -45,6 +59,35 @@ class JsonableBehavior extends ModelBehavior
     }
     
     return $results;
+  }
+  
+/**
+ * Guarda el array de las secciones para ser usado por un js sortable
+ * Utiliza la clave 'items' para las secciones hijo
+ *
+ * @param array $datas 
+ * @return array
+ */
+  public function buildTreeForJson( Model $Model, $datas)
+  {
+    $sections = array();
+  
+    foreach( $datas as $data)
+    {
+      $section = $data [$Model->alias];
+    
+      if( !empty( $data ['children']))
+      {
+        $section ['items'] = $this->buildTreeForJson( $Model, $data ['children']);
+      }
+      else
+      {
+        $section ['items'] = array();
+      }
+    
+      $sections [] = $section;
+    }
+    return $sections;
   }
   
 }

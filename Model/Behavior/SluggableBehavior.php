@@ -23,7 +23,7 @@ class SluggableBehavior extends ModelBehavior {
         $this->_settings[$model->alias] = (!empty($settings)) ? $settings + $default : $default;
     }
 
-    function beforeSave( Model $model) 
+    function afterValidate( Model $model) 
     {
       if( empty( $model->id) || $this->_settings[$model->alias]['overwrite'])
       {
@@ -31,7 +31,7 @@ class SluggableBehavior extends ModelBehavior {
         {
           $this->__stringSlug( $model);
         }
-
+        
         if( $this->_settings [$model->alias]['type'] == 'alpha' || empty( $model->data[$model->alias][$this->_settings [$model->alias]['slugfield']]))
         {
           $slugfield = $this->_settings [$model->alias]['slugfield'];
@@ -42,8 +42,8 @@ class SluggableBehavior extends ModelBehavior {
           }
         }
       }
-
-      return parent::beforeSave( $model);
+      
+      return parent::afterValidate( $model);
     }
     
     // function afterSave(&$model, $created)
