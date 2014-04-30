@@ -48,4 +48,30 @@ EOF;
     
     return $this->Html->scriptBlock( $js);
   }
+  
+  
+/**
+ * Devuelve una url en formato string
+ * Útil para las urls que introduce el usuario en los campos de un contenido
+ * Previene que el usuario haya puesto el http://
+ * Muestra el enlace sin http://
+ *
+ * @param string $url 
+ * @param boolean $link Si true, devolverá un enlace
+ * @param array $attributes Los atributos de la etiqueta <a>
+ * @return string
+ */
+  public function urlString( $url, $link = false, $attributes = array())
+  {
+    $url = preg_replace("(https?://)", "", $url);
+    
+    if( $link)
+    {
+      return $this->Html->link( $url, 'http://'. $url, $attributes);
+    }
+    else
+    {
+      return $url;
+    }    
+  }
 }
