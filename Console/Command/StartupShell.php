@@ -100,6 +100,30 @@ class StartupShell extends AppShell
       $this->languages();
     }
     
+    // Plugin Section
+    if( in_array( 'Section', $plugins))
+    {
+      $this->schemaCreate( 'Section.section');
+    }
+    
+    // Plugin Configuration
+    if( in_array( 'Configuration', $plugins))
+    {
+      $this->schemaCreate( 'Configuration.configuration');
+    }
+    
+    // Plugin Configuration
+    if( in_array( 'Dictionary', $plugins))
+    {
+      $this->schemaCreate( 'Dictionary.dictionaries');
+    }
+    
+    // Plugin Configuration
+    if( in_array( 'Rating', $plugins))
+    {
+      $this->schemaCreate( 'Rating.ratings');
+    }
+    
     // Plugin Acl (por defecto tiene que estar siempre activo)
     $this->schemaCreate( 'Acl.acl');
     

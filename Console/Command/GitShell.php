@@ -205,6 +205,12 @@ class GitShell extends AppShell
           "branch" => "master",
           "type" => 'plugin'
       ),
+      array(
+          "name" => "Websys",
+          "url" => "https://github.com/Cofreeweb/CakeWebsysPlugin.git",
+          "branch" => "master",
+          "type" => 'plugin'
+      ),
   );
   
   
