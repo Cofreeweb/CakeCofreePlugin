@@ -219,6 +219,43 @@ class GitShell extends AppShell
       ),
   );
   
+/**
+ * Plantillas de plugins determinados para determinadas configuraciones
+ *
+ * @var array
+ */
+  private $pluginsTemplates = array(
+      'websys' => array(
+          'Cofree',
+          'Acl',
+          'Comments',
+          'I18n',
+          'Upload',
+          'Management',
+          'Search',
+          'Geocoder',
+          'AssetCompress',
+          'scssphp',
+          'Rating',
+          'Recaptcha',
+          'Utility',
+          'CssMin',
+          'jsmin',
+          'Chart',
+          'Vote',
+          'Blog',
+          'Section',
+          'Angular',
+          'Mongodb',
+          'Entry',
+          'Configuration',
+          'Dictionary',
+          'Fixturize',
+          'Websys',
+          'Themed'
+      )
+  );
+  
   
   private $folders = array(
       'webroot/files/photos'
@@ -262,15 +299,46 @@ class GitShell extends AppShell
     
     $filecontent = "<?php\n\$config ['AppPlugins'] = array(\n";
     
-    foreach( $this->availablePlugins as $plugin)
+    $response = $this->in( '¿Quieres usar una plantilla de plugins?', array( 's', 'n'), 's');
+    
+    if( $response == 's')
     {
-      $bool = $this->in( "¿Quieres usar el plugin ". $plugin ['name'] . "?", array( 'y', 'n'), 'y');
+      $i = 1;
       
-      if( $bool == 'y')
+      foreach( $this->pluginsTemplates as $template => $plugins)
+      {
+        $options [$i] = $template;
+        $this->out( $i .'. '. $template);
+      }
+      
+      $option = $this->in( 'Selecciona una plantilla');
+      
+      if( !array_key_exists( $option, $options))
+      {
+        $this->out( 'No existe esa plantilla');
+        die();
+      }
+      
+      $plugins = $this->pluginsTemplates [$option];
+      
+      foreach( $plugins as $plugin)
       {
         $filecontent .= "  '{$plugin ['name']}',\n";
       }
     }
+    else
+    {
+      foreach( $this->availablePlugins as $plugin)
+      {
+        $bool = $this->in( "¿Quieres usar el plugin ". $plugin ['name'] . "?", array( 'y', 'n'), 'y');
+
+        if( $bool == 'y')
+        {
+          $filecontent .= "  '{$plugin ['name']}',\n";
+        }
+      }
+    }
+    
     
     $filecontent .= ");\n";
     
