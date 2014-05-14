@@ -319,7 +319,7 @@ class GitShell extends AppShell
         die();
       }
       
-      $plugins = $this->pluginsTemplates [$option];
+      $plugins = $this->pluginsTemplates [$options [$option]];
       
       foreach( $plugins as $plugin)
       {
