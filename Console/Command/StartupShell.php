@@ -136,6 +136,11 @@ class StartupShell extends AppShell
     $this->out( 'Sincronizando acl...');
     $this->cmd( 'bin/cake Acl.acl_mgm sync');
         
+    $this->cmd( 'bin/cake Cofree.startup create_groups');
+  }
+  
+  public function create_groups()
+  {
     // Creando grupo Admin
     $Group = ClassRegistry::init( array(
         'class' => 'Acl.Group',
@@ -224,8 +229,6 @@ class StartupShell extends AppShell
     // Añade un usuario
     $this->cmd( 'bin/cake acl.acl_mgm add_user');
   }
-  
-  
   public function languages()
   {
     CakePlugin::load( 'I18n', array( 'bootstrap' => true, 'routes' => true));
