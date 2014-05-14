@@ -307,7 +307,7 @@ class GitShell extends AppShell
       
       foreach( $this->pluginsTemplates as $template => $plugins)
       {
-        $options [$i] = $template;
+        $options [$i] = $plugins;
         $this->out( $i .'. '. $template);
       }
       
