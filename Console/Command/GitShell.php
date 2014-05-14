@@ -393,8 +393,8 @@ class GitShell extends AppShell
     $this->ex( 'git push -u origin master');
     
     $this->init();
-
-    $this->install_plugins();
+    
+    $this->ex( 'bin/cake Cofree.git install_plugins');
     $this->__commit( 'Creado plugins', 'master');
   }
   
