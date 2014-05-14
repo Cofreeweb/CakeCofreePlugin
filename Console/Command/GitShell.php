@@ -211,6 +211,12 @@ class GitShell extends AppShell
           "branch" => "master",
           "type" => 'plugin'
       ),
+      array(
+          "name" => "Themed",
+          "url" => "https://bitbucket.org/cofreeweb/websysthemes.git",
+          "branch" => "master",
+          "type" => 'view'
+      ),
   );
   
   
@@ -538,6 +544,14 @@ class GitShell extends AppShell
                 $this->appDir ."Config/core.php\n" .
                 $this->appDir ."Config/email.php\n";
     
+    $content .= "# OS generated files #\n";
+    $content .= "######################\n";
+    $content .= ".DS_Store\n";
+    $content .= ".DS_Store?\n";
+    $content .= "._*\n";
+    $content .= ".Spotlight-V100\n";
+    $content .= ".Trashes\n";
+    $content .= "ehthumbs.db\n";  
     $File->write( $content);
   }
  

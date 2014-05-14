@@ -3,6 +3,8 @@
 class StartupShell extends AppShell
 {
   
+  public $tasks = array( 'Template');
+  
 /**
  * Nombre de los grupos por defecto de la aplicación
  */
@@ -63,7 +65,7 @@ class StartupShell extends AppShell
  * @return void
  */
   public function base()
-  {
+  {   
     $plugins = App::objects( 'plugin');
     
     $this->out( "************************************");
@@ -124,6 +126,9 @@ class StartupShell extends AppShell
       $this->schemaCreate( 'Rating.ratings');
     }
     
+    
+    CakePlugin::load( 'Acl', array( 'bootstrap' => true, 'routes' => true));
+    
     // Plugin Acl (por defecto tiene que estar siempre activo)
     $this->schemaCreate( 'Acl.acl');
     
@@ -140,7 +145,8 @@ class StartupShell extends AppShell
     $Group->create();
     $Group->save( array(
         'name' => 'Admin',
-        'level' => 1
+        'level' => 1,
+        'permissions' => '*'
     ));
     
     // Otorgando permisos a Controller para el grupo Admin
@@ -222,6 +228,8 @@ class StartupShell extends AppShell
   
   public function languages()
   {
+    CakePlugin::load( 'I18n', array( 'bootstrap' => true, 'routes' => true));
+    
     $this->out( 'Creando idiomas...');
     
     App::uses( 'Language', 'I18n.Model');
@@ -257,5 +265,137 @@ class StartupShell extends AppShell
     
     return $parser;
    
+  }
+  
+/**
+ * Escribe el fichero database.php
+ *
+ * @return void
+ */
+  public function setDatabase()
+  {
+    $this->dbs = array();
+    $this->Template->templatePaths ['default'] = App::pluginPath( 'Cofree') . 'Console' .DS. 'Templates' .DS. 'default' .DS;
+    
+    $this->out( '___ BASE DE DATOS ___');
+    $this->__setDB();
+    
+		$filename = APP . 'Config' .DS. 'database.php';
+				
+		if( !empty( $this->dbs))
+		{
+		  $this->Template->set( array(
+  		    'dbs' => implode( "\n\n", $this->dbs)
+  		));
+  		
+		  $contents = $this->Template->generate( 'config', 'database');
+		  $this->createFile( $filename, $contents);
+		}
+  }
+  
+/**
+ * Toma el contenido de una configuración de database para que sea escrita posteriormente en database.php
+ *
+ * @return void
+ */
+  private function __setDB()
+  {    
+    $connectors = array(
+        '1' => 'mysql',
+        '2' => 'mongodb'
+    );
+    
+    $this->out( '1. Mysql');
+    $this->out( '2. MongoDB');
+    
+    $db_driver = $this->in( 'Selecciona un conector', false, '1');
+    
+    if( !isset( $connectors [$db_driver]))
+    {
+      $this->out( 'El conector seleccionado no existe');
+      die();
+    }
+    
+    $db_default = $connectors [$db_driver] == 'mysql' ? 'default' : 'mongo';
+    
+    $db_name = $this->in( 'Nombre de la conexión (variable de PHP)', false, $db_default);
+    $db_database = $this->in( 'Nombre de la base de datos');
+    $db_login = $this->in( 'Nombre de usuario', false, 'root');
+    $db_password = $this->in( 'Contraseña', false, 'root');
+    
+    $this->Template->set( compact( array(
+        'db_database',
+        'db_login',
+        'db_password',
+        'db_name'
+    )));
+    
+    $content = $this->Template->generate( 'config', '_'. $connectors [$db_driver]);
+    $this->dbs [] = $content;
+    
+    $other = $this->in( '¿Deseas definir otra base de datos', array(
+        's',
+        'n'
+    ));
+    
+    if( $other == 's')
+    {
+      $this->__setDB();
+    }
+    else
+    {
+      return;
+    }
+  }
+  
+  public function setBootstrap()
+  {
+    Configure::load( 'plugins');
+    
+    $plugins = Configure::read( 'AppPlugins');
+    $plugins_path = App::path( 'plugins');
+    $plugins_path = $plugins_path [0];
+    
+    $contents = array();
+    
+    foreach( $plugins as $plugin)
+    {
+      $array = array();
+      
+      $plugin_path = $plugins_path . $plugin;
+      
+      if( !is_dir( $plugin_path))
+      {
+        continue;
+      }
+      
+      if( file_exists( $plugins_path . $plugin .DS. 'Config' .DS. 'bootstrap.php'))
+      {
+        $array [] = "'bootstrap' => true";
+      }
+      
+      if( file_exists( $plugins_path . $plugin .DS. 'Config' .DS. 'routes.php'))
+      {
+        $array [] = "'routes' => true";
+      }
+      
+      $_content = "CakePlugin::load( '". $plugin ."'";
+      
+      if( !empty( $array))
+      {
+        $_content .= ", array( ". implode( ', ', $array) .")";
+      }
+      
+      $_content .= ")";
+      
+      $contents [] = $_content;
+    }
+    
+    $this->Template->templatePaths ['default'] = App::pluginPath( 'Cofree') . 'Console' .DS. 'Templates' .DS. 'default' .DS;
+    $this->Template->set( 'plugins', implode( ";\n", $contents) .';');
+    $content = $this->Template->generate( 'config', 'bootstrap');
+    
+    $filename = APP . 'Config' .DS. 'bootstrap.php';
+    $this->createFile( $filename, $content);
   }
 }
