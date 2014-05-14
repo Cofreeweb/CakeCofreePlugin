@@ -318,12 +318,12 @@ class GitShell extends AppShell
         $this->out( 'No existe esa plantilla');
         die();
       }
-      
-      $plugins = $this->pluginsTemplates [$options [$option]];
+
+      $plugins = $options [$option];
       
       foreach( $plugins as $plugin)
       {
-        $filecontent .= "  '{$plugin ['name']}',\n";
+        $filecontent .= "  '{$plugin}',\n";
       }
     }
     else
