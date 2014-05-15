@@ -383,6 +383,21 @@ class GitShell extends AppShell
  */
   public function install()
   {
+    $this->out( '¡ATENCIÓN!');
+    $this->out( 'Antes de hacer la instalación de la aplicación asegúrate de lo siguiente:');
+    $this->out( '');
+    $this->out( '1. Tengo los datos de la base de datos donde estará la aplicación web');
+    $this->out( '2. Tengo la URL del repositorio Git donde estará la aplicación web');
+    $this->out( '');
+    $has = $this->in( '¿Continuar?', array( 's', 'n'), 's');
+    
+    if( $has == 'n')
+    {
+      $this->out( 'OK, no pasa nada. Borra el directorio que se ha creado para la aplicación antes de ejectuar de nuevo el comando.');
+      $this->out( 'Ciao!');
+      die();
+    }
+    
     $this->createFoldersFiles();
     $this->ignore();
     $url = $this->in( "Escribe la URL del repositorio");
