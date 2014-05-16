@@ -35,9 +35,3 @@ Configure::load( 'events');
 App::uses('CofreeEventManager', 'Cofree.Event');
 CofreeEventManager::loadListeners();
 
-if( isset( $_SERVER ['REQUEST_URI']))
-{
-  CakeLog::write( 'debug', $_SERVER ['REQUEST_URI']);
-  
-}
-

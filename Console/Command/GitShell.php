@@ -625,7 +625,13 @@ class GitShell extends AppShell
     $File = new File( '.gitignore');
     $content =  $this->appDir ."Config/database.php\n" .
                 $this->appDir ."Config/core.php\n" .
-                $this->appDir ."Config/email.php\n";
+                $this->appDir ."Config/email.php\n" .
+                $this->appDir ."app/tmp/logs/*\n" .
+                $this->appDir ."app/tmp/sessions/*\n" .
+                $this->appDir ."app/tmp/tests/*\n" .
+                $this->appDir ."app/tmp/cache/models/*\n" .
+                $this->appDir ."app/tmp/cache/persistent/*\n" .
+                $this->appDir ."app/tmp/cache/views/*\n";
     
     $content .= "# OS generated files #\n";
     $content .= "######################\n";

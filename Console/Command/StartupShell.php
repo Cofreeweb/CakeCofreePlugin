@@ -1,5 +1,8 @@
 <?php
 
+App::uses('Folder', 'Utility');
+App::uses('File', 'Utility');
+
 class StartupShell extends AppShell
 {
   
@@ -33,6 +36,21 @@ class StartupShell extends AppShell
     {
       $this->dbConnection = $this->params ['connection'];
     }
+  }
+
+/**
+ * Da una salida de una cabecera
+ *
+ * @param string $text 
+ * @return void
+ */
+  public function header( $text)
+  {
+    $this->hr();
+    $this->out( '###########################################');
+    $this->out( strtoupper( $text));
+    $this->out( '###########################################');
+    $this->hr();
   }
   
 /**
@@ -68,9 +86,7 @@ class StartupShell extends AppShell
   {   
     $plugins = App::objects( 'plugin');
     
-    $this->out( "************************************");
-    $this->out( "Instalando base de datos");
-    $this->out( "************************************");
+    $this->header( 'Creando tablas en las bases de datos');
     
     // Plugin I18n
     if( in_array( 'I18n', $plugins))
@@ -137,6 +153,7 @@ class StartupShell extends AppShell
     $this->cmd( 'bin/cake Acl.acl_mgm sync');
         
     $this->cmd( 'bin/cake Cofree.startup create_groups');
+    $this->cmd( 'bin/cake Cofree.startup create_slinks');
   }
   
   public function create_groups()
@@ -277,10 +294,11 @@ class StartupShell extends AppShell
  */
   public function setDatabase()
   {
+    $this->interactive = false;
+    $this->header( 'Configurando las bases de datos');
     $this->dbs = array();
     $this->Template->templatePaths ['default'] = App::pluginPath( 'Cofree') . 'Console' .DS. 'Templates' .DS. 'default' .DS;
     
-    $this->out( '___ BASE DE DATOS ___');
     $this->__setDB();
     
 		$filename = APP . 'Config' .DS. 'database.php';
@@ -294,6 +312,8 @@ class StartupShell extends AppShell
 		  $contents = $this->Template->generate( 'config', 'database');
 		  $this->createFile( $filename, $contents);
 		}
+		
+		$this->interactive = true;
   }
   
 /**
@@ -351,8 +371,15 @@ class StartupShell extends AppShell
     }
   }
   
+/**
+ * Crea el fichero bootstrap.php
+ *
+ * @return void
+ */
   public function setBootstrap()
   {
+    $this->interactive = false;
+    $this->header( 'Creando fichero de bootstrap.php');
     Configure::load( 'plugins');
     
     $plugins = Configure::read( 'AppPlugins');
@@ -400,5 +427,69 @@ class StartupShell extends AppShell
     
     $filename = APP . 'Config' .DS. 'bootstrap.php';
     $this->createFile( $filename, $content);
+    $this->interactive = true;
+  }
+  
+
+  
+/**
+ * Crea los enlaces simbólicos para los assets de los plugins y los themes
+ *
+ * @return void
+ */
+  public function create_slinks()
+  {
+    $this->header( 'Creando enlaces simbólicos');
+    $plugins = CakePlugin::loaded();
+    $plugins_path = App::path( 'plugins');
+    $plugins_path = $plugins_path [0];
+    
+    // Fichero de .gitignore para añadir los enlaces simbólicos
+    $gitignore = new File( ROOT .DS. '.gitignore');
+    
+    
+    foreach( $plugins as $plugin)
+    {
+      $webroot = $plugins_path . $plugin .DS. 'webroot';
+      $dest = WWW_ROOT . Inflector::underscore( $plugin);
+      
+      if( is_dir( $webroot) && !file_exists( $dest))
+      {
+        $cmd = 'ln -s '. $webroot . ' '. $dest;
+        $this->cmd( $cmd);
+        
+        // Añade la linea en .gitignore para ignorar ese fichero
+        $gitignore->append( "\n" . str_replace( ROOT . DS, '', $dest));
+      }
+    }
+    
+    $themes = App::path( 'views');
+    $themes = $themes [0];
+    $path_themed = $themes . 'Themed';
+    
+    $Folder = new Folder( $path_themed);
+    
+    list( $dirs, $files) = $Folder->read( false, true);
+    
+    foreach( $dirs as $dir)
+    {
+      if( !is_dir( WWW_ROOT . 'theme'))
+      {
+        $Folder->create( WWW_ROOT . 'theme');
+        $gitignore->append( "\n" . str_replace( ROOT . DS, '', WWW_ROOT .'theme' .DS.'*'));
+      }
+      
+      $theme_dir = App::themePath( $dir);
+
+      $webroot = $theme_dir . 'webroot';
+      $dest = WWW_ROOT . 'theme' .DS. $dir;
+      
+      if( !file_exists( $dest))
+      {
+        $cmd = 'ln -s '. $webroot . ' '. $dest;
+        $this->cmd( $cmd);
+        $gitignore->append( "\n" . str_replace( ROOT . DS, '', $dest));
+      }
+    }
   }
 }
