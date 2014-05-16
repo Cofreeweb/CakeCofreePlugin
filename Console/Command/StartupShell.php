@@ -294,7 +294,6 @@ class StartupShell extends AppShell
  */
   public function setDatabase()
   {
-    $this->interactive = false;
     $this->header( 'Configurando las bases de datos');
     $this->dbs = array();
     $this->Template->templatePaths ['default'] = App::pluginPath( 'Cofree') . 'Console' .DS. 'Templates' .DS. 'default' .DS;
@@ -313,7 +312,6 @@ class StartupShell extends AppShell
 		  $this->createFile( $filename, $contents);
 		}
 		
-		$this->interactive = true;
   }
   
 /**
@@ -378,7 +376,6 @@ class StartupShell extends AppShell
  */
   public function setBootstrap()
   {
-    $this->interactive = false;
     $this->header( 'Creando fichero de bootstrap.php');
     Configure::load( 'plugins');
     
@@ -427,7 +424,6 @@ class StartupShell extends AppShell
     
     $filename = APP . 'Config' .DS. 'bootstrap.php';
     $this->createFile( $filename, $content);
-    $this->interactive = true;
   }
   
 
