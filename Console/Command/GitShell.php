@@ -21,7 +21,7 @@
 App::uses('Folder', 'Utility');
 App::uses('File', 'Utility');
 
-class GitShell extends AppShell 
+class GitShell extends AppShell
 {
 
 /**
@@ -30,8 +30,8 @@ class GitShell extends AppShell
  * @access private
  */
   private $plugins = array();
-  
-  
+
+
 /**
  * Plugins disponibles
  *
@@ -212,12 +212,12 @@ class GitShell extends AppShell
           "type" => 'plugin'
       ),
   );
-  
-  
+
+
   private $folders = array(
       'webroot/files/photos'
   );
-  
+
   private $ignoreFolders = array(
       'tmp/cache/models',
       'tmp/cache/persistent',
@@ -227,7 +227,7 @@ class GitShell extends AppShell
       'tmp/tests',
       'webroot/files'
   );
-  
+
   private $appDir = null;
 
 /**
@@ -236,42 +236,42 @@ class GitShell extends AppShell
  *
  * @return void
  */
-  public function initialize() 
+  public function initialize()
   {
     $app = str_replace( ROOT .'/', '', APP);
-    
+
     if( !file_exists( APP . 'Config' .DS. 'plugins.php'))
     {
       $this->generatePluginsConfig();
     }
-    
+
     Configure::load( 'plugins');
     $this->plugins = Configure::read( 'AppPlugins');
     $this->appDir = str_replace( ROOT .'/', '', APP);
   }
-  
+
   private function generatePluginsConfig()
   {
     App::uses('File', 'Utility');
-    
+
     $filecontent = "<?php\n\$config ['AppPlugins'] = array(\n";
-    
+
     foreach( $this->availablePlugins as $plugin)
     {
       $bool = $this->in( "¿Quieres usar el plugin ". $plugin ['name'] . "?", array( 'y', 'n'), 'y');
-      
+
       if( $bool == 'y')
       {
         $filecontent .= "  '{$plugin ['name']}',\n";
       }
     }
-    
+
     $filecontent .= ");\n";
-    
+
     $File = new File( APP . 'Config' .DS. 'plugins.php');
     $File->write( $filecontent);
   }
-  
+
 /**
  * Ejectua un comando de shell
  *
@@ -284,8 +284,8 @@ class GitShell extends AppShell
     $this->out( $cmd);
     exec( $cmd);
   }
-  
-  
+
+
 /**
  * Ejecuta un comando git que afecta a un plugin concreto
  *
@@ -298,7 +298,7 @@ class GitShell extends AppShell
   {
     $this->ex( 'git --git-dir='. $this->__pluginDir( $plugin) .'/.git '. $cmd);
   }
- 
+
 /**
  * Comando Shell
  * Inicializa la aplicación
@@ -317,13 +317,13 @@ class GitShell extends AppShell
     $this->ex( 'git commit -a -m "first commit"');
     $this->ex( 'git remote add origin '. $url);
     $this->ex( 'git push -u origin master');
-    
+
     $this->init();
 
     $this->install_plugins();
     $this->__commit( 'Creado plugins', 'master');
   }
-  
+
 /**
  * Inicializa el proyecto después de un git clone
  *
@@ -331,11 +331,11 @@ class GitShell extends AppShell
  * @return void
  */
   public function init()
-  {    
+  {
     $this->copyfiles();
     $this->change_mod();
   }
-  
+
 /**
  * Cambia el mod a 777 de los directorios necesarios
  *
@@ -351,7 +351,7 @@ class GitShell extends AppShell
     $this->ex( 'chmod 777 '. $this->appDir . 'tmp/cache/views');
     $this->ex( 'chmod 777 '. $this->appDir . 'webroot/files/photos');
   }
-  
+
 /**
  * Copia los ficheros ignorados en el repositorio git
  *
@@ -364,7 +364,7 @@ class GitShell extends AppShell
     $this->ex( 'cp '. $this->appDir . 'Config/database.php.default ' . $this->appDir . 'Config/database.php');
     $this->ex( 'cp '. $this->appDir . 'Config/email.php.default ' . $this->appDir . 'Config/email.php');
   }
-  
+
 /**
  * Ver pluginCheckout()
  *
@@ -378,25 +378,25 @@ class GitShell extends AppShell
       $this->out( 'Es necesario indicar como primer argumento un plugin');
       die();
     }
-    
+
     $plugin = $this->args [0];
-        
+
     if( !$this->__getConfig( $plugin))
     {
       $this->out( "El plugin indicado no existe en la configuración. Asegúrate que has usado correctamente las mayúsculas.");
     }
-    
+
     if( !isset( $this->args [1]))
     {
-      $branch = !isset( $this->args [1]) 
+      $branch = !isset( $this->args [1])
         ? 'master'
         : $this->args [1];
     }
-    
+
     $this->pluginCheckout( $plugin, $branch);
   }
 
-  
+
 /**
  * Crea los plugins indicados en Configure::read( 'AppPlugins')
  *
@@ -406,7 +406,7 @@ class GitShell extends AppShell
   public function install_plugins()
   {
     $this->__uninstallPlugins();
-    
+
     foreach( $this->plugins as $name)
     {
       if( !$this->__pluginExists( $name))
@@ -419,8 +419,8 @@ class GitShell extends AppShell
       }
     }
   }
-  
-    
+
+
 /**
  * Actualiza los plugins indicados en Configure::read( 'AppPlugins')
  *
@@ -458,7 +458,7 @@ class GitShell extends AppShell
 
     $this->__commit( $msg, $branch);
   }
-  
+
   private function __commit( $msg, $branch)
   {
     $this->ex( 'git add *');
@@ -474,13 +474,13 @@ class GitShell extends AppShell
  * @return void
  */
   public function pl_commit()
-  {    
+  {
     if( !isset( $this->args [0]))
     {
       $this->out( 'Es necesario indicar como primer argumento un plugin');
       die();
     }
-    
+
     $msg = $this->in( "Escribe un mensaje");
 
     if( empty( $msg))
@@ -502,49 +502,49 @@ class GitShell extends AppShell
 /**
  * Hace un checkout del branch en cada plugin, atendiendo a lo indicado en Configure::read( 'AppPlugins')
  *
- * @param string $plugin 
- * @param string $branch 
+ * @param string $plugin
+ * @param string $branch
  * @return void
  */
   private function pluginCheckout( $plugin, $branch)
   {
     $this->gitPlugin( $plugin, 'checkout '. $branch);
   }
-  
+
   private function createFoldersFiles()
   {
     foreach( $this->folders as $folder)
     {
       new Folder( APP . $folder, true, 0777);
     }
-    
+
     $this->ex( 'cp '. $this->appDir . 'Config/core.php ' . $this->appDir . 'Config/core.php.default');
     $this->ex( 'rm '. $this->appDir . 'Config/core.php');
   }
-  
+
   private function ignore()
   {
     App::uses('Folder', 'Utility');
     App::uses('File', 'Utility');
-    
+
     foreach( $this->ignoreFolders as $folder)
     {
       $File = new File( APP . $folder .'/.gitignore');
       $File->write( "*\n!.gitignore");
     }
-    
+
     $File = new File( '.gitignore');
     $content =  $this->appDir ."Config/database.php\n" .
                 $this->appDir ."Config/core.php\n" .
                 $this->appDir ."Config/email.php\n";
-    
+
     $File->write( $content);
   }
- 
+
 /**
  * Verifica que el plugin existe en la configuración
  *
- * @param string $plugin 
+ * @param string $plugin
  * @return boolean
  */
   private function __checkPlugin( $name)
@@ -557,29 +557,29 @@ class GitShell extends AppShell
 
     return true;
   }
-  
+
   private function __pluginDir( $plugin)
   {
     if( !is_array( $plugin))
     {
       $plugin = $this->__getConfig( $plugin);
     }
-    
+
     $dir = $this->appDir . Inflector::camelize( $plugin ['type']) .DS. $plugin ['name'];
     return $dir;
   }
-  
+
   private function __pluginExists( $name)
   {
     $plugin = $this->__getConfig ($name);
     $dir = $this->__pluginDir( $plugin);
     return is_dir( $dir);
   }
-  
+
 /**
  * Devuelve la configuración de un plugin, dado el nombre del mismo
  *
- * @param string $name 
+ * @param string $name
  * @return array
  */
   private function __getConfig( $name)
@@ -588,7 +588,7 @@ class GitShell extends AppShell
     {
       return $name;
     }
-    
+
     foreach( $this->availablePlugins as $plugin)
     {
       if( $plugin ['name'] == $name)
@@ -596,16 +596,16 @@ class GitShell extends AppShell
         return $plugin;
       }
     }
-    
+
     return false;
   }
-  
-  
+
+
   private function __uninstallPlugins()
   {
     $availables = Hash::extract( $this->availablePlugins, '{n}.name');
     $removes = array_diff( $availables, $this->plugins);
-    
+
     foreach( $removes as $name)
     {
       if( $this->__pluginExists( $name))
