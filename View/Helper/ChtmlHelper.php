@@ -74,4 +74,30 @@ EOF;
       return $url;
     }    
   }
+  
+/**
+ * Indica si el navegante es un robot de los buscadores
+ *
+ * @return boolean
+ */
+  public function isBot()
+  { 
+    $bots = array(
+        'Googlebot', 'Baiduspider', 'ia_archiver',
+        'R6_FeedFetcher', 'NetcraftSurveyAgent', 'Sogou web spider',
+        'bingbot', 'Yahoo! Slurp', 'facebookexternalhit', 'PrintfulBot',
+        'msnbot', 'Twitterbot', 'UnwindFetchor',
+        'urlresolver', 'Butterfly', 'TweetmemeBot' 
+    );
+ 
+    foreach( $bots as $b)
+    {
+      if( stripos( $_SERVER ['HTTP_USER_AGENT'], $b ) !== false) 
+      {
+        return true;
+      }
+    }
+    
+    return false;
+  }
 }
