@@ -49,9 +49,15 @@ class JsonableBehavior extends ModelBehavior
       {
         foreach( $results as $key => $result)
         {
-          if( isset( $results [$key][$model->alias][$field]))
+          if( array_key_exists( $field, $result [$model->alias]))
           {
             $data = json_decode( $results [$key][$model->alias][$field], true);
+
+            if( empty( $data))
+            {
+              $data = array();
+            }
+
             $results [$key][$model->alias][$field] = $data;
           }
         }
