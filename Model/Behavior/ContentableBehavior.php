@@ -40,6 +40,7 @@ class ContentableBehavior extends ModelBehavior
     {
       $query ['conditions'][$Model->alias .'.content_type'] = $Model->name;    
     }
+    
     return $query;  
   }
   

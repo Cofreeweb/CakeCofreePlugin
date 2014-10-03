@@ -25,14 +25,14 @@ class JsonableBehavior extends ModelBehavior
   
   public function beforeSave( Model $model)
   {
-    foreach( $this->settings ['fields'] as $field)
+    foreach( $model->actsAs ['Cofree.Jsonable']['fields'] as $field)
     {
-      if( isset( $model->data [$model->alias][$field]))
+      if( isset( $model->data [$model->alias][$field]) && is_array( $model->data [$model->alias][$field]))
       {
         $model->data [$model->alias][$field] = json_encode( $model->data [$model->alias][$field]);
       }
     }
-    
+
     return true;
   }
   
@@ -42,10 +42,10 @@ class JsonableBehavior extends ModelBehavior
     {
       return $results;
     }
-    
+
     if( isset( $results [0][$model->alias]))
     {
-      foreach( $this->settings ['fields'] as $field)
+      foreach( $model->actsAs ['Cofree.Jsonable']['fields'] as $field)
       {
         foreach( $results as $key => $result)
         {
@@ -57,12 +57,14 @@ class JsonableBehavior extends ModelBehavior
             {
               $data = array();
             }
-
+            
             $results [$key][$model->alias][$field] = $data;
           }
         }
       }
     }
+
+    
     
     return $results;
   }

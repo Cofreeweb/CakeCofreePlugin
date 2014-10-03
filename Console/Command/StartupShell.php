@@ -84,6 +84,23 @@ class StartupShell extends AppShell
  */
   public function base()
   {   
+    $this->create_database();
+    
+    CakePlugin::load( 'Acl', array( 'bootstrap' => true, 'routes' => true));
+    
+    // Plugin Acl (por defecto tiene que estar siempre activo)
+    $this->schemaCreate( 'Acl.acl');
+    
+    // Sincronización de los controllers/actions de ACL
+    $this->out( 'Sincronizando acl...');
+    $this->cmd( 'bin/cake Acl.acl_mgm sync');
+        
+    $this->cmd( 'bin/cake Cofree.startup create_groups');
+    $this->cmd( 'bin/cake Cofree.startup create_slinks');
+  }
+
+  public function create_database()
+  {
     $plugins = App::objects( 'plugin');
     
     $this->header( 'Creando tablas en las bases de datos');
@@ -141,19 +158,6 @@ class StartupShell extends AppShell
     {
       $this->schemaCreate( 'Rating.ratings');
     }
-    
-    
-    CakePlugin::load( 'Acl', array( 'bootstrap' => true, 'routes' => true));
-    
-    // Plugin Acl (por defecto tiene que estar siempre activo)
-    $this->schemaCreate( 'Acl.acl');
-    
-    // Sincronización de los controllers/actions de ACL
-    $this->out( 'Sincronizando acl...');
-    $this->cmd( 'bin/cake Acl.acl_mgm sync');
-        
-    $this->cmd( 'bin/cake Cofree.startup create_groups');
-    $this->cmd( 'bin/cake Cofree.startup create_slinks');
   }
   
   public function create_groups()
