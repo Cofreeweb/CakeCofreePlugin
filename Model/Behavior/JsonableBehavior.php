@@ -8,14 +8,14 @@
  */
 class JsonableBehavior extends ModelBehavior
 {
-  
 /**
  * Opciones por defecto
  *
  * @var array
  */
   private $__defaults = array(
-    'fields' => array()
+    'fields' => array(),
+    'translate' => array()
   );
   
   public function setup( Model $model, $settings = array())
@@ -53,6 +53,8 @@ class JsonableBehavior extends ModelBehavior
           {
             $data = json_decode( $results [$key][$model->alias][$field], true);
 
+            $data = $this->setTranslates( $model, $data, $field);
+
             if( empty( $data))
             {
               $data = array();
@@ -63,10 +65,60 @@ class JsonableBehavior extends ModelBehavior
         }
       }
     }
-
-    
     
     return $results;
+  }
+
+  public function setTranslates( Model $Model, $data, $field)
+  {
+    if( !is_array( $data))
+    {
+      return $data;
+    }
+
+    $first_key = key( $data);
+    $is_data_array = is_numeric( $first_key);
+
+    if( array_key_exists( $field, $this->settings ['translate']))
+    {
+      $keys = $this->settings ['translate'][$field];
+      
+      foreach( $keys as $key)
+      {
+        if( $is_data_array)
+        {
+          foreach( $data as &$_data)
+          {
+            $_data = $this->_translate( $_data, $key);
+          }
+        }
+        else
+        {
+          $data = $this->_translate( $data, $key);
+        }
+      }
+    }
+    
+    return $data;
+  }
+
+  private function _translate( $data, $key)
+  {
+    if( !is_array( $data [$key]))
+    {
+      $data [$key] = array();
+    }
+
+    foreach( Configure::read( 'Config.languages') as $locale)
+    {
+      if( !isset( $data [$key][$locale]))
+      {
+        $data [$key][$locale] = null;
+      }
+    }
+
+    $data ['_'. $key] = $data [$key][Configure::read( 'Config.language')];
+    return $data;
   }
   
 /**
