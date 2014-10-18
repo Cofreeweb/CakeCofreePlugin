@@ -104,7 +104,7 @@ class JsonableBehavior extends ModelBehavior
 
   private function _translate( $data, $key)
   {
-    if( !is_array( $data [$key]))
+    if( !isset( $data [$key]) || !is_array( $data [$key]))
     {
       $data [$key] = array();
     }
