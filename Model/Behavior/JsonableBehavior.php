@@ -23,7 +23,7 @@ class JsonableBehavior extends ModelBehavior
     $this->settings = array_merge( $this->__defaults, $settings);
   }
   
-  public function beforeSave( Model $model)
+  public function beforeSave( Model $model, $options = array())
   {
     foreach( $model->actsAs ['Cofree.Jsonable']['fields'] as $field)
     {
@@ -36,7 +36,7 @@ class JsonableBehavior extends ModelBehavior
     return true;
   }
   
-  public function afterFind( Model $model, $results)
+  public function afterFind( Model $model, $results, $primary = false)
   {
     if( empty( $this->settings ['fields']))
     {

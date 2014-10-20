@@ -20,7 +20,7 @@ class ContentableBehavior extends ModelBehavior
  * @param string $Model 
  * @return boolean
  */
-  public function beforeSave( Model $Model)
+  public function beforeSave( Model $Model, $options = array())
   {
     $Model->data [$Model->alias]['content_type'] = $Model->name;
     return true;
