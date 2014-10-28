@@ -18,49 +18,49 @@ class JsonableBehavior extends ModelBehavior
     'translate' => array()
   );
   
-  public function setup( Model $model, $settings = array())
+  public function setup( Model $Model, $settings = array())
   {
-    $this->settings = array_merge( $this->__defaults, $settings);
+    $this->settings [$Model->alias] = array_merge( $this->__defaults, $settings);
   }
   
-  public function beforeSave( Model $model, $options = array())
+  public function beforeSave( Model $Model, $options = array())
   {
-    foreach( $model->actsAs ['Cofree.Jsonable']['fields'] as $field)
+    foreach( $Model->actsAs ['Cofree.Jsonable']['fields'] as $field)
     {
-      if( isset( $model->data [$model->alias][$field]) && is_array( $model->data [$model->alias][$field]))
+      if( isset( $Model->data [$Model->alias][$field]) && is_array( $Model->data [$Model->alias][$field]))
       {
-        $model->data [$model->alias][$field] = json_encode( $model->data [$model->alias][$field]);
+        $Model->data [$Model->alias][$field] = json_encode( $Model->data [$Model->alias][$field]);
       }
     }
 
     return true;
   }
   
-  public function afterFind( Model $model, $results, $primary = false)
+  public function afterFind( Model $Model, $results, $primary = false)
   {
-    if( empty( $this->settings ['fields']))
+    if( empty( $this->settings [$Model->alias] ['fields']))
     {
       return $results;
     }
 
-    if( isset( $results [0][$model->alias]))
-    {
-      foreach( $model->actsAs ['Cofree.Jsonable']['fields'] as $field)
+    if( isset( $results [0][$Model->alias]))
+    {      
+      foreach( $this->settings [$Model->alias]['fields'] as $field)
       {
         foreach( $results as $key => $result)
         {
-          if( array_key_exists( $field, $result [$model->alias]))
+          if( array_key_exists( $field, $result [$Model->alias]))
           {
-            $data = json_decode( $results [$key][$model->alias][$field], true);
+            $data = json_decode( $results [$key][$Model->alias][$field], true);
 
-            $data = $this->setTranslates( $model, $data, $field);
+            $data = $this->setTranslates( $Model, $data, $field);
 
             if( empty( $data))
             {
               $data = array();
             }
             
-            $results [$key][$model->alias][$field] = $data;
+            $results [$key][$Model->alias][$field] = $data;
           }
         }
       }
@@ -79,9 +79,9 @@ class JsonableBehavior extends ModelBehavior
     $first_key = key( $data);
     $is_data_array = is_numeric( $first_key);
 
-    if( array_key_exists( $field, $this->settings ['translate']))
+    if( array_key_exists( $field, $this->settings [$Model->alias]['translate']))
     {
-      $keys = $this->settings ['translate'][$field];
+      $keys = $this->settings [$Model->alias]['translate'][$field];
       
       foreach( $keys as $key)
       {
