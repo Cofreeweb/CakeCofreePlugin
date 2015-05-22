@@ -20,7 +20,7 @@ class LangableBehavior extends ModelBehavior
  * @param string $Model 
  * @return boolean
  */
-  public function beforeSave( Model $Model)
+  public function beforeSave( Model $Model, $options = array())
   {
     if( empty( $Model->id))
     {

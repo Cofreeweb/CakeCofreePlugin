@@ -217,6 +217,13 @@ class GitShell extends AppShell
           "branch" => "master",
           "type" => 'view'
       ),
+      array(
+          "name" => "GoogleAPI",
+          // "url" => "https://github.com/Zehir/CakePHP-Plugin-GoogleAPI.git",
+          "url" => "https://github.com/google/google-api-php-client.git",
+          "branch" => "master",
+          "type" => 'vendor'
+      ),
   );
   
 /**
