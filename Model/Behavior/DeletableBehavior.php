@@ -37,7 +37,7 @@ class DeletableBehavior extends ModelBehavior
     return $query;  
   }
   
-  public function beforeDelete( Model $model, $cascade = true)
+  public function beforeDelete( Model $Model, $cascade = true)
   {
     $updateCounterCache = false;
     
