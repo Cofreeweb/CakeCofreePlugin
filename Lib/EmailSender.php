@@ -16,14 +16,14 @@ class EmailSender
  */
   public static $name;
   
-  public function getInstance()
+  public static function getInstance()
   {
     $Email = new CakeEmail( 'default');
     $Email->domain( Configure::read( 'Config.domain'));
     return $Email;
   }
   
-  public function config( CakeEmail $Email, $key = false)
+  public static function config( CakeEmail $Email, $key = false)
   {
     if( $key === false)
     {
@@ -40,7 +40,7 @@ class EmailSender
     Configure::write( 'Config.language', $lang);
   }
   
-  public function sendMail( CakeEmail $Email)
+  public static function sendMail( CakeEmail $Email)
   {
     try {
       return $Email->send();
