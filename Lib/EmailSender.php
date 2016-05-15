@@ -35,7 +35,7 @@ class EmailSender
     return $Email;
   }
   
-  public function changeLanguage( $lang)
+  public static function changeLanguage( $lang)
   {
     Configure::write( 'Config.language', $lang);
   }
